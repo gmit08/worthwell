@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Worthwell — Estate sales, gently guided</title>
+  <meta name="description" content="Price a home's things from a photo and plan the sale. Worthwell is opening a private beta for families and solo operators, with a first focus on the Hudson Valley.">
+  <meta property="og:title" content="Worthwell — Estate sales, gently guided">
+  <meta property="og:description" content="Price a home's things from a photo and plan the sale. A private beta for families and solo operators.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./app-screenshot.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sky: #EAF1F8;
+      --lake: #5B8DC9;
+      --harbor: #1E3557;
+      --gold: #C9A45C;
+      --gold-deep: #A7843E;
+      --warm: #FBFAF7;
+      --tag: #FBF3E1;
+      --muted: #3D5270;
+      --line: rgba(30, 53, 87, 0.12);
+      --shadow: 0 8px 30px rgba(30, 53, 87, 0.10);
+      --shadow-soft: 0 2px 12px rgba(30, 53, 87, 0.08);
+      --radius: 22px;
+      --max: 1120px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--harbor);
+      background: var(--warm);
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--lake); }
+    a:hover { color: var(--harbor); }
+    h1, h2, h3, .wordmark, .price, .display {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--harbor);
+    }
+    h1 { font-size: clamp(2.1rem, 4.5vw, 3.35rem); margin: 0 0 0.6em; }
+    h2 { font-size: clamp(1.75rem, 3vw, 2.4rem); margin: 0 0 0.5em; }
+    h3 { font-size: 1.35rem; margin: 0 0 0.4em; font-weight: 600; }
+    p { margin: 0 0 1em; }
+    .skip {
+      position: absolute; left: -999px; top: 0;
+      background: var(--harbor); color: #fff; padding: 8px 12px; z-index: 100;
+    }
+    .skip:focus { left: 12px; top: 12px; }
+
+    header.nav {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(251, 250, 247, 0.86);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner, .wrap {
+      width: min(var(--max), calc(100% - 2rem));
+      margin: 0 auto;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; min-height: 64px;
+    }
+    .wordmark {
+      font-size: 1.45rem; font-weight: 500; color: var(--harbor);
+      text-decoration: none; letter-spacing: -0.03em;
+    }
+    .nav-links { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+    .nav-links a {
+      color: var(--harbor); text-decoration: none; font-size: 0.92rem; font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--lake); }
+    .nav-toggle {
+      display: none; background: none; border: 0; color: var(--harbor);
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.4rem;
+      background: var(--gold); color: var(--harbor);
+      font-weight: 700; font-size: 1rem;
+      padding: 0.85rem 1.4rem; border-radius: 999px;
+      text-decoration: none; border: 0; cursor: pointer;
+      box-shadow: 0 1px 0 rgba(30, 53, 87, 0.08);
+    }
+    .btn:hover { background: #d4b06b; color: var(--harbor); }
+    .btn:focus-visible, .btn-quiet:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--lake); outline-offset: 2px;
+    }
+    .btn-quiet {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; color: inherit;
+      font-weight: 600; font-size: 1rem;
+      padding: 0.85rem 1.25rem; border-radius: 999px;
+      text-decoration: none; border: 1.5px solid currentColor; cursor: pointer;
+    }
+    .btn-quiet:hover { background: rgba(255,255,255,0.18); color: inherit; }
+    .btn-sm { padding: 0.55rem 1rem; font-size: 0.92rem; }
+
+    .hero {
+      background: linear-gradient(180deg, #3E6EAE 0%, #5B8DC9 46%, #B7D0E8 82%, #EAF1F8 100%);
+      color: #fff;
+      padding: 3.2rem 0 4.5rem;
+    }
+    .hero .lede {
+      color: #F7FBFF;
+      opacity: 1;
+      text-shadow: 0 1px 2px rgba(30, 53, 87, 0.28);
+    }
+    .hero .fine {
+      color: var(--harbor);
+      opacity: 0.9;
+    }
+    .hero .btn-quiet {
+      background: var(--warm);
+      color: var(--harbor);
+      border-color: transparent;
+    }
+    .hero .btn-quiet:hover {
+      background: #fff;
+      color: var(--harbor);
+    }
+    .hero-grid {
+      width: min(var(--max), calc(100% - 2rem));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .brand-lockup { text-align: left; margin-bottom: 1.5rem; }
+    .brand-lockup .wordmark { font-size: clamp(2.8rem, 6vw, 4.4rem); color: #fff; display: block; }
+    .tagline {
+      display: inline-block;
+      font-variant: small-caps;
+      letter-spacing: 0.28em;
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(255,255,255,0.65);
+      border-bottom: 1px solid rgba(255,255,255,0.65);
+      padding: 0.28rem 0.7rem;
+      margin-top: 0.35rem;
+      color: #fff;
+      opacity: 0.95;
+    }
+    .hero h1 { color: #fff; }
+    .hero .lede { font-size: 1.15rem; max-width: 36rem; opacity: 0.95; margin-bottom: 1.4rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+    .hero .fine { font-size: 0.92rem; opacity: 0.9; margin: 0; }
+    .hero .fine a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+
+    .device {
+      background: var(--warm);
+      border-radius: 28px;
+      padding: 0.7rem;
+      box-shadow: 0 24px 50px rgba(30, 53, 87, 0.22);
+    }
+    .device img {
+      border-radius: 20px;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .device-cap {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.55rem 0 0.15rem;
+    }
+
+    section { padding: 4.5rem 0; }
+    .section-intro { max-width: 38rem; margin-bottom: 2.2rem; }
+    .muted { color: var(--muted); }
+    .kicker {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--lake); margin: 0 0 0.6rem;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .step {
+      background: var(--warm);
+      border-radius: var(--radius);
+      padding: 1.35rem 1.25rem 1.5rem;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(30, 53, 87, 0.06);
+    }
+    .step .num {
+      font-family: Fraunces, serif;
+      font-size: 1.5rem;
+      width: 2.2rem; height: 2.2rem;
+      border-radius: 999px;
+      background: var(--sky);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.85rem;
+    }
+    .step p { margin: 0; color: var(--muted); font-size: 0.98rem; }
+
+    .features-band { background: var(--sky); }
+    .feature-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .feature-list { display: grid; gap: 0.85rem; }
+    .feature {
+      background: var(--warm);
+      border-radius: 16px;
+      padding: 1rem 1.15rem;
+      box-shadow: var(--shadow-soft);
+    }
+    .feature h3 { font-size: 1.12rem; margin-bottom: 0.25rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: 0.98rem; }
+    .soon {
+      display: inline-block;
+      font-family: Inter, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--harbor);
+      background: var(--tag);
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      padding: 0.12rem 0.5rem;
+      margin-left: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .priced-card {
+      background: var(--warm);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.5rem 1.3rem;
+      box-shadow: var(--shadow);
+      margin-top: 1rem;
+    }
+    .priced-card p { color: var(--muted); }
+    .priced-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1rem 0 0.8rem; }
+    .looks {
+      background: var(--gold); color: var(--harbor);
+      font-weight: 700; border: 0; border-radius: 999px;
+      padding: 0.7rem 1.2rem; font-size: 1rem;
+    }
+    .price-tag {
+      position: relative;
+      display: inline-block;
+      background: var(--tag);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      padding: 0.55rem 1.1rem 0.55rem 1.85rem;
+      font-family: Fraunces, serif;
+      font-size: 1.85rem;
+      font-weight: 600;
+      transform: rotate(-4deg);
+      color: var(--harbor);
+    }
+    .price-tag::before {
+      content: "";
+      position: absolute; left: 0.55rem; top: 50%;
+      width: 11px; height: 11px; margin-top: -6px;
+      border-radius: 50%;
+      background: var(--warm);
+      border: 2px solid var(--gold);
+    }
+    .running { color: var(--lake); font-weight: 600; font-size: 0.95rem; margin: 0; }
+
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .who {
+      background: var(--sky);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.3rem 1.5rem;
+    }
+    .who p { margin: 0; color: var(--muted); }
+
+    .note {
+      background: linear-gradient(180deg, #d7e6f4 0%, #EAF1F8 100%);
+    }
+    .note-card {
+      width: min(720px, calc(100% - 2rem));
+      margin: 0 auto;
+      background: var(--warm);
+      border-radius: var(--radius);
+      padding: 2.2rem 2rem;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+    .note-card h2 { font-style: italic; font-weight: 500; }
+    .note-card p:last-child { margin-bottom: 0; }
+
+    .waitlist { background: var(--harbor); color: var(--warm); }
+    .waitlist h2, .waitlist .kicker { color: var(--warm); }
+    .waitlist .kicker { color: var(--gold); }
+    .waitlist .muted { color: rgba(251, 250, 247, 0.78); }
+    .waitlist-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    form {
+      background: var(--warm);
+      color: var(--harbor);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    label { display: block; font-weight: 600; font-size: 0.92rem; margin: 0 0 0.35rem; }
+    .field { margin-bottom: 0.95rem; }
+    input, select {
+      width: 100%;
+      font: inherit;
+      color: var(--harbor);
+      background: #fff;
+      border: 1.5px solid rgba(30, 53, 87, 0.18);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
+    }
+    .todo-note {
+      font-size: 0.85rem;
+      background: var(--tag);
+      border: 1px dashed var(--gold);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
+      margin: 0 0 1rem;
+      color: var(--harbor);
+    }
+    .form-status {
+      display: none;
+      margin-top: 0.8rem;
+      font-size: 0.95rem;
+      color: var(--harbor);
+      background: var(--sky);
+      border-radius: 12px;
+      padding: 0.75rem 0.9rem;
+    }
+    .form-status.show { display: block; }
+    .privacy { font-size: 0.82rem; color: var(--muted); margin: 0.8rem 0 0; }
+
+    .builder { }
+    .builder-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      background: var(--sky);
+      border-radius: 28px;
+      padding: clamp(1.5rem, 3vw, 2.4rem);
+    }
+    .lessons { display: grid; gap: 0.8rem; margin: 1.2rem 0; }
+    .lesson {
+      background: var(--warm);
+      border-radius: 16px;
+      padding: 1rem 1.15rem;
+    }
+    .lesson h3 { font-size: 1.05rem; margin-bottom: 0.2rem; }
+    .lesson p { margin: 0; color: var(--muted); font-size: 0.98rem; }
+    .builder-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; margin-top: 0.4rem; }
+    .builder-actions .email-me {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 0.2rem 0.15rem;
+    }
+    .builder-actions .email-me:hover { color: var(--harbor); }
+
+    .pilot {
+      font-size: 0.95rem;
+      color: var(--muted);
+      border-left: 3px solid var(--gold);
+      padding-left: 1rem;
+      margin: 1.5rem 0 0;
+    }
+
+    .faq { background: var(--sky); }
+    details {
+      background: var(--warm);
+      border-radius: 16px;
+      padding: 0.2rem 1.2rem;
+      margin-bottom: 0.65rem;
+      box-shadow: var(--shadow-soft);
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      padding: 1rem 0;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      float: right;
+      font-weight: 500;
+      color: var(--lake);
+    }
+    details[open] summary::after { content: "–"; }
+    details p { padding-bottom: 0.9rem; color: var(--muted); }
+
+    footer {
+      background: var(--harbor);
+      color: rgba(251, 250, 247, 0.86);
+      padding: 2.8rem 0 2.2rem;
+      font-size: 0.95rem;
+    }
+    .foot-word {
+      font-family: Fraunces, serif;
+      font-size: 1.8rem;
+      color: #fff;
+      margin: 0 0 0.2rem;
+    }
+    .meaning { font-style: italic; margin: 0 0 1.2rem; opacity: 0.85; }
+    .foot-links { display: flex; flex-wrap: wrap; gap: 0.9rem 1.3rem; margin-bottom: 1.4rem; }
+    footer a { color: #fff; }
+    .legal { margin: 0; font-size: 0.82rem; opacity: 0.7; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .feature-layout, .waitlist-grid, .steps, .who-grid {
+        grid-template-columns: 1fr;
+      }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .hero { padding-top: 2.2rem; }
+      .hero .brand-lockup { text-align: center; }
+      .hero-copy { text-align: center; }
+      .hero .lede { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+    }
+    @media (max-width: 640px) {
+      .nav-toggle { display: inline-flex; }
+      .nav-links {
+        display: none;
+        position: absolute; left: 0; right: 0; top: 64px;
+        background: var(--warm);
+        border-bottom: 1px solid var(--line);
+        flex-direction: column; align-items: flex-start;
+        padding: 0.8rem 1.2rem 1.1rem;
+        gap: 0.7rem;
+      }
+      .nav-links.open { display: flex; }
+      .steps, .who-grid { grid-template-columns: 1fr; }
+      section { padding: 3.2rem 0; }
+      .note-card { padding: 1.6rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="wordmark" href="#top">Worthwell</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="nav-toggle">Menu</button>
+      <nav id="site-nav" class="nav-links" aria-label="Primary">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#waitlist">Private beta</a>
+        <a href="#built-by">Built by Genevieve</a>
+        <a class="btn btn-sm" href="#waitlist">Join the beta</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="brand-lockup">
+            <span class="wordmark">Worthwell</span>
+            <span class="tagline">Estate sales, gently guided</span>
+          </div>
+          <h1>Start with a photo. See what a sale could bring.</h1>
+          <p class="lede">Worthwell helps families and solo operators run a first estate sale or liquidation. Photograph a room, review starting prices, and get a plan you can hold — at your own pace.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#waitlist">Join the private beta</a>
+            <a class="btn-quiet" href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer">See the live app</a>
+          </div>
+          <p class="fine">A private beta, with a first focus on the Hudson Valley, New York.</p>
+        </div>
+        <figure class="device">
+          <img src="./app-screenshot.png" width="840" height="880" alt="The Worthwell app home screen, with the wordmark, the line “Start with a photo of a room,” and buttons to take a room photo or choose one from the library.">
+          <figcaption class="device-cap">The live app, as it looks today</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <div class="section-intro">
+          <p class="kicker">How it works</p>
+          <h2>Four calm steps, starting with a picture.</h2>
+          <p class="muted">You can begin without creating an account. An account is only needed when you want to save your sale and pick it up on another device.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <div class="num" aria-hidden="true">1</div>
+            <h3>Photograph a room</h3>
+            <p>Start with a room photo to see furniture and smaller things together, or snap a single piece you’re unsure about.</p>
+          </article>
+          <article class="step">
+            <div class="num" aria-hidden="true">2</div>
+            <h3>Review each price</h3>
+            <p>You’ll get a fair-value range and a starting price, labeled as an AI estimate until you tap “Looks right” or edit it.</p>
+          </article>
+          <article class="step">
+            <div class="num" aria-hidden="true">3</div>
+            <h3>Shape the sale</h3>
+            <p>When does everything need to be gone? Will you sell in person, online, or both? Where is the home? You’ll get a simple plan, such as “Your sale in 3 weekends.”</p>
+          </article>
+          <article class="step">
+            <div class="num" aria-hidden="true">4</div>
+            <h3>Keep it in one place</h3>
+            <p>An item board tracks every piece, with a projected total — and money actually sold, kept separate. Export a spreadsheet whenever you need one.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-band" id="features">
+      <div class="wrap">
+        <div class="section-intro">
+          <p class="kicker">What’s in the app</p>
+          <h2>Clear prices, and you stay in control.</h2>
+          <p class="muted">These are features in the live app today. Anything still being built is marked Coming soon.</p>
+        </div>
+        <div class="feature-layout">
+          <div class="feature-list">
+            <article class="feature">
+              <h3>A room or a single item</h3>
+              <p>Photograph a whole room, or one object. You can add more photos, name the room, and keep going when you’re ready.</p>
+            </article>
+            <article class="feature">
+              <h3>You approve every estimate</h3>
+              <p>Every AI price stays an estimate until you accept or change it. Edit the name, condition, value, or starting price whenever you need to.</p>
+            </article>
+            <article class="feature">
+              <h3>A running total, honestly split</h3>
+              <p>See a projected low, expected, and high for the sale, with money already sold shown on its own — not mixed into the forecast.</p>
+            </article>
+            <article class="feature">
+              <h3>A timeline that shapes prices</h3>
+              <p>Choose how soon you’re hoping to sell. If you change that timeline later, Worthwell asks before it recalculates unapproved starting prices.</p>
+            </article>
+            <article class="feature">
+              <h3>List on its own, bundle, or Donate</h3>
+              <p>Each item gets a plain recommendation. If two things look like a set, the app can suggest pricing them together — and you can skip it.</p>
+            </article>
+            <article class="feature">
+              <h3>Comparable listings, only if they’re real</h3>
+              <p>For higher-value pieces, Worthwell looks for comparable listings and keeps only the ones it actually opened. If it can’t find reliable ones, it says so.</p>
+            </article>
+            <article class="feature">
+              <h3>Your photos stay put until you sign up</h3>
+              <p>Photos remain on the device until you create an account. Sign in with Google or email to continue on your phone and computer.</p>
+            </article>
+            <article class="feature">
+              <h3>Automatic markdowns <span class="soon">Coming soon</span></h3>
+              <p>A timeline-based schedule that lowers prices as the last sale day approaches, with a chance to see, skip, or undo each drop.</p>
+            </article>
+            <article class="feature">
+              <h3>Donation pickup suggestions <span class="soon">Coming soon</span></h3>
+              <p>A nudge to schedule a pickup when something is large, low-value, and not moving — or already marked Donate.</p>
+            </article>
+            <article class="feature">
+              <h3>A Settings page you control <span class="soon">Coming soon</span></h3>
+              <p>A home for pricing preferences and listing rules, so your choices stay saved instead of living in a conversation.</p>
+            </article>
+          </div>
+          <div>
+            <figure class="device">
+              <img src="./app-screenshot.png" width="840" height="880" alt="Worthwell’s first screen: a soft sky background, the wordmark, and a card for taking a room photo or choosing one from the library.">
+            </figure>
+            <aside class="priced-card" aria-label="Example of a priced item card">
+              <h3>Mahogany side table</h3>
+              <p>Looks like a 1960s two-drawer piece in good condition. Worth about $90–$140. We’d list it on its own.</p>
+              <div class="priced-row">
+                <span class="looks">Looks right</span>
+                <span class="price-tag">$120</span>
+              </div>
+              <p class="running">$385 so far · 6 items priced</p>
+            </aside>
+          </div>
+        </div>
+        <p class="pilot">Worthwell grew out of a real Hudson Valley estate sale: 406 items, and $6,096 in transactions. That sale is how the product was first shaped — not a promise of what any other sale will bring.</p>
+      </div>
+    </section>
+
+    <section id="who">
+      <div class="wrap">
+        <div class="section-intro">
+          <p class="kicker">Who it’s for</p>
+          <h2>Built for a first sale, not a warehouse crew.</h2>
+        </div>
+        <div class="who-grid">
+          <article class="who">
+            <h3>Families</h3>
+            <p>If you’re sorting a home’s things for the first time, Worthwell gives you prices and a plan without handing the sale — and a large share of it — to a company.</p>
+          </article>
+          <article class="who">
+            <h3>Solo operators</h3>
+            <p>If you’re running a liquidation yourself, you get a single place to catalog rooms, approve prices, and see what the sale is adding up to.</p>
+          </article>
+          <article class="who">
+            <h3>The Hudson Valley, first</h3>
+            <p>The local starting place is the Hudson Valley in New York. If you’re elsewhere and want to try the private beta, you’re still welcome to join the list.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="note" id="note">
+      <div class="note-card">
+        <p class="kicker">A quieter pace</p>
+        <h2>If you’re doing this after a loss, the app is meant to stay out of the way.</h2>
+        <p>Grief makes it harder to concentrate, so Worthwell keeps to one clear step at a time, with a visible next action, and nothing you have to remember from the screen before. The work is the sale — not a reminder of why you’re here.</p>
+      </div>
+    </section>
+
+    <section class="waitlist" id="waitlist">
+      <div class="wrap waitlist-grid">
+        <div>
+          <p class="kicker">Private beta</p>
+          <h2>Join the list.</h2>
+          <p class="muted">This is a small, early group — not a public launch. Tell us a little about you, and we’ll be in touch when a spot is open. There’s no cost to join the list, and we’ll share any pricing before you’re asked to pay.</p>
+        </div>
+        <div id="waitlist-form" class="tally-embed" style="background:#fff;border-radius:16px;padding:8px 16px;">
+          <iframe data-tally-src="https://tally.so/embed/db0AEz?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="790" frameborder="0" marginheight="0" marginwidth="0" title="Worthwell Private Beta Waitlist"></iframe>
+          <p class="privacy">Trouble loading? <a href="https://tally.so/r/db0AEz" target="_blank" rel="noopener">Open the waitlist form</a>.</p>
+        </div>
+        <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
+      </div>
+    </section>
+
+    <section id="built-by">
+      <div class="wrap">
+        <div class="builder-card">
+          <div>
+            <p class="kicker">For hiring managers</p>
+            <h2>Built by Genevieve Mitchell</h2>
+            <p>I’m an AI product manager in the Hudson Valley, and I took Worthwell from a ChatGPT-project MVP to a Lovable rebuild in the She Builds cohort. The first version was useful — and it taught me exactly where an AI product can quietly fail people who are already under strain.</p>
+            <div class="lessons">
+              <article class="lesson">
+                <h3>No fake background processing</h3>
+                <p>The rebuild only says something is running when a real job exists. Finished work is kept if a later step fails, instead of leaving someone waiting on a spinner that isn’t doing anything.</p>
+              </article>
+              <article class="lesson">
+                <h3>No fabricated comparable listings</h3>
+                <p>The ChatGPT MVP could invent comps. The rebuild keeps only listings it actually opened, and says when it can’t find a reliable one.</p>
+              </article>
+              <article class="lesson">
+                <h3>Instructions that persist</h3>
+                <p>Pricing lives in a deterministic configuration module — fair market value, adjusted for condition and tier, then rounded — not in a prompt that forgets. A Settings page is coming so those choices stay saved.</p>
+              </article>
+            </div>
+            <p>I design AI products that know when to act, and when to stop and ask. I’m looking for roles — and for teams who want that same care in something they need built.</p>
+            <div class="builder-actions">
+              <a class="btn" href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer">See my portfolio</a>
+              <a class="btn" href="https://calendly.com/genevieve-mitchell/30min" target="_blank" rel="noopener noreferrer">Book an intro</a>
+              <a class="email-me" href="mailto:gmitchell0808@gmail.com">or email me</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="wrap">
+        <div class="section-intro">
+          <p class="kicker">Questions</p>
+          <h2>A few things people ask.</h2>
+        </div>
+        <details>
+          <summary>What is the private beta?</summary>
+          <p>A small, early group using Worthwell and telling us what’s missing. Joining the list doesn’t create an account or guarantee a spot; we’ll follow up when there’s room. The live app is already available to try if you’d like to look around first.</p>
+        </details>
+        <details>
+          <summary>Is this only for the Hudson Valley?</summary>
+          <p>That’s the first place we’re focused, because it’s where Worthwell was shaped. If you’re somewhere else and facing a first estate sale, you’re still welcome to join the list.</p>
+        </details>
+        <details>
+          <summary>Do I need an account to try it?</summary>
+          <p>No. You can start with a photo. Photos stay on your device until you sign up. Create a free account when you want to save the sale and open it on another phone or computer. Guest use has daily limits so the service stays available.</p>
+        </details>
+        <details>
+          <summary>How are prices calculated?</summary>
+          <p>A starting list price begins with a fair market value, then is adjusted for condition and pricing tier and rounded. The result is shown as an AI estimate until you approve or edit it. For higher-value items, the app looks for comparable listings and keeps only ones it actually opened. You can always change a price.</p>
+        </details>
+        <details>
+          <summary>Does it cost anything?</summary>
+          <p>Joining the waitlist is free, and you can try the live app without paying. Free use has some limits. A paid plan for whole-home sales is in the works; we’ll share any pricing before you’re asked to pay.</p>
+        </details>
+        <details>
+          <summary>I hire product people, or I need something built. How do I reach you?</summary>
+          <p>I’m Genevieve Mitchell, the product manager building Worthwell. You can look through <a href="https://gmit08.github.io/#work">my portfolio</a>, <a href="https://calendly.com/genevieve-mitchell/30min" target="_blank" rel="noopener noreferrer">book an intro</a>, or <a href="mailto:gmitchell0808@gmail.com">email me</a>.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p class="foot-word">Worthwell</p>
+      <p class="meaning">A well provides water and nourishment.</p>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="#waitlist">Private beta</a>
+        <a href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer">Live app</a>
+        <a href="#built-by">Built by Genevieve</a>
+        <a href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <p class="legal">Estate sales, gently guided.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.getElementById("nav-toggle");
+      var nav = document.getElementById("site-nav");
+      if (toggle && nav) {
+        toggle.addEventListener("click", function () {
+          var open = nav.classList.toggle("open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        nav.querySelectorAll("a").forEach(function (link) {
+          link.addEventListener("click", function () {
+            nav.classList.remove("open");
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+
+    })();
+  </script>
+</body>
+</html>
