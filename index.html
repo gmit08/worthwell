@@ -252,9 +252,18 @@
     .priced-card {
       background: var(--warm);
       border-radius: var(--radius);
-      padding: 1.5rem 1.5rem 1.3rem;
+      padding: 0;
       box-shadow: var(--shadow);
       margin-top: 1rem;
+      overflow: hidden;
+    }
+    .priced-card .item-photo {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+    .priced-body {
+      padding: 1.5rem 1.5rem 1.3rem;
     }
     .priced-card p { color: var(--muted); }
     .priced-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1rem 0 0.8rem; }
@@ -595,13 +604,17 @@
               <img src="./app-screenshot.png" width="840" height="880" alt="Worthwell’s first screen: a soft sky background, the wordmark, and a card for taking a room photo or choosing one from the library.">
             </figure>
             <aside class="priced-card" aria-label="Example of a priced item card">
-              <h3>Mahogany side table</h3>
-              <p>Looks like a 1960s two-drawer piece in good condition. Worth about $90–$140. We’d list it on its own.</p>
-              <div class="priced-row">
-                <span class="looks">Looks right</span>
-                <span class="price-tag">$120</span>
+              <!-- Sample item photo: Ron Lach, Pexels License. https://www.pexels.com/photo/mid-century-bedside-cabinet-and-bed-10260856/ -->
+              <img class="item-photo" src="./mahogany-side-table.webp" width="800" height="600" alt="A mid-century two-drawer wooden side table in warm brown wood, in good condition, photographed beside a bed.">
+              <div class="priced-body">
+                <h3>Mahogany side table</h3>
+                <p>Looks like a 1960s two-drawer piece in good condition. Worth about $90–$140. We’d list it on its own.</p>
+                <div class="priced-row">
+                  <span class="looks">Looks right</span>
+                  <span class="price-tag">$120</span>
+                </div>
+                <p class="running">$385 so far · 6 items priced</p>
               </div>
-              <p class="running">$385 so far · 6 items priced</p>
             </aside>
           </div>
         </div>
