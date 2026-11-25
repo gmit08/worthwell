@@ -476,20 +476,29 @@
       .note-card { padding: 1.6rem 1.2rem; }
     }
   </style>
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_u9a6AgZL7SvSPF4DUP4MPYruGZNbPC69baEyphooZnD7', {
+      api_host: 'https://us.i.posthog.com',
+      defaults: '2026-08-30',
+      person_profiles: 'identified_only',
+      capture_pageview: true
+    })
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="nav">
     <div class="nav-inner">
-      <a class="wordmark" href="#top">Worthwell</a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="nav-toggle">Menu</button>
+      <a class="wordmark" href="#top" data-attr="nav-home">Worthwell</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="nav-toggle" data-attr="nav-menu">Menu</button>
       <nav id="site-nav" class="nav-links" aria-label="Primary">
-        <a href="#how">How it works</a>
-        <a href="#features">Features</a>
-        <a href="#waitlist">Private beta</a>
-        <a href="#built-by">Built by Genevieve</a>
-        <a class="btn btn-sm" href="#waitlist">Join the beta</a>
+        <a href="#how" data-attr="nav-how">How it works</a>
+        <a href="#features" data-attr="nav-features">Features</a>
+        <a href="#waitlist" data-attr="nav-waitlist">Private beta</a>
+        <a href="#built-by" data-attr="nav-built-by">Built by Genevieve</a>
+        <a class="btn btn-sm" href="#waitlist" data-attr="nav-join-beta">Join the beta</a>
       </nav>
     </div>
   </header>
@@ -505,8 +514,8 @@
           <h1>Start with a photo. See what a sale could bring.</h1>
           <p class="lede">Worthwell helps families and solo operators run a first estate sale or liquidation. Photograph a room, review starting prices, and get a plan you can hold — at your own pace.</p>
           <div class="hero-actions">
-            <a class="btn" href="#waitlist">Join the private beta</a>
-            <a class="btn-quiet" href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer">See the live app</a>
+            <a class="btn" href="#waitlist" data-attr="hero-join-beta">Join the private beta</a>
+            <a class="btn-quiet" href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer" data-attr="hero-live-app">See the live app</a>
           </div>
           <p class="fine">A private beta, with a first focus on the Hudson Valley, New York.</p>
         </div>
@@ -662,7 +671,7 @@
         </div>
         <div id="waitlist-form" class="tally-embed" style="background:#fff;border-radius:16px;padding:8px 16px;">
           <iframe data-tally-src="https://tally.so/embed/db0AEz?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="790" frameborder="0" marginheight="0" marginwidth="0" title="Worthwell Private Beta Waitlist"></iframe>
-          <p class="privacy">Trouble loading? <a href="https://tally.so/r/db0AEz" target="_blank" rel="noopener">Open the waitlist form</a>.</p>
+          <p class="privacy">Trouble loading? <a href="https://tally.so/r/db0AEz" target="_blank" rel="noopener" data-attr="waitlist-form-fallback">Open the waitlist form</a>.</p>
         </div>
         <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
       </div>
@@ -691,9 +700,9 @@
             </div>
             <p>I design AI products that know when to act, and when to stop and ask. I’m looking for roles — and for teams who want that same care in something they need built.</p>
             <div class="builder-actions">
-              <a class="btn" href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer">See my portfolio</a>
-              <a class="btn" href="https://calendly.com/genevieve-mitchell/30min" target="_blank" rel="noopener noreferrer">Book an intro</a>
-              <a class="email-me" href="mailto:gmitchell0808@gmail.com">or email me</a>
+              <a class="btn" href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer" data-attr="builder-portfolio">See my portfolio</a>
+              <a class="btn" href="https://calendly.com/genevieve-mitchell/30min" target="_blank" rel="noopener noreferrer" data-attr="builder-book-intro">Book an intro</a>
+              <a class="email-me" href="mailto:gmitchell0808@gmail.com" data-attr="builder-email">or email me</a>
             </div>
           </div>
         </div>
@@ -739,11 +748,11 @@
       <p class="foot-word">Worthwell</p>
       <p class="meaning">A well provides water and nourishment.</p>
       <nav class="foot-links" aria-label="Footer">
-        <a href="#waitlist">Private beta</a>
-        <a href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer">Live app</a>
-        <a href="#built-by">Built by Genevieve</a>
-        <a href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer">Portfolio</a>
-        <a href="#faq">FAQ</a>
+        <a href="#waitlist" data-attr="footer-waitlist">Private beta</a>
+        <a href="https://worthwell-estate-sale-planner.lovable.app" target="_blank" rel="noopener noreferrer" data-attr="footer-live-app">Live app</a>
+        <a href="#built-by" data-attr="footer-built-by">Built by Genevieve</a>
+        <a href="https://gmit08.github.io/#work" target="_blank" rel="noopener noreferrer" data-attr="footer-portfolio">Portfolio</a>
+        <a href="#faq" data-attr="footer-faq">FAQ</a>
       </nav>
       <p class="legal">Estate sales, gently guided.</p>
     </div>
